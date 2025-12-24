@@ -1,0 +1,2 @@
+# Genea_DevSecOps_assignment
+Genea_DevSecOps_assignment
