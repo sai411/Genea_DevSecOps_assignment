@@ -219,3 +219,4 @@ terraform/.terraform/
 # Crash logs
 crash.log
 crash.*.log
+crash.*.log

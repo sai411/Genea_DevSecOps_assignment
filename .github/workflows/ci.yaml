@@ -1,0 +1,96 @@
+name: CI - Genea User Management (DevSecOps)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "tests/**"
+      - "Dockerfile"
+  pull_request:
+    paths:
+      - "app/**"
+      - "tests/**"
+      - "Dockerfile"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install app dependencies
+        working-directory: app
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Install test dependencies
+        working-directory: tests
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        run: |
+          pytest -v
+
+      - name: SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ variables.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+            -Dsonar.sources=app
+            -Dsonar.tests=tests
+            -Dsonar.python.version=3.11
+
+      - name: Dependency vulnerability scan
+        working-directory: app
+        run: |
+          pip install pip-audit
+          pip-audit
+
+      - name: Set image tag
+        run: |
+          echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build \
+            -t ${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG} \
+            -t ${{ secrets.ECR_REPOSITORY }}:latest .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ secrets.ECR_REPOSITORY }}:${{ github.run_number }}
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          ignore-unfixed: true
+
+      - name: Push image to ECR
+        run: |
+          docker push ${{ secrets.ECR_REPOSITORY }}:${IMAGE_TAG}
+          docker push ${{ secrets.ECR_REPOSITORY }}:latest
