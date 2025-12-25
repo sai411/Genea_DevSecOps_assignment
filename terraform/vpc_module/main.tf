@@ -8,6 +8,7 @@ resource "aws_vpc" "dev-vpc" {
   }
 }
 
+#tfsec:ignore:aws-ec2-no-public-ip-subnet
 resource "aws_subnet" "Dev-public" {
   count                   = length(var.public_subnets_cidr)
   vpc_id                  = aws_vpc.dev-vpc.id

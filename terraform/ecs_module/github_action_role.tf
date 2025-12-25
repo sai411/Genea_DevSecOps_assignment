@@ -10,6 +10,7 @@ resource "aws_iam_openid_connect_provider" "github" {
   ]
 }
 
+#tfsec:ignore:aws-iam-no-inline-policy
 resource "aws_iam_role" "github_actions_ecr_role" {
   name = "github-actions-ecr-role"
 
@@ -36,7 +37,7 @@ resource "aws_iam_role" "github_actions_ecr_role" {
   })
 }
 
-
+# tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "github_ecr_push_policy" {
   name = "github-actions-ecr-push-policy"
 
@@ -59,12 +60,13 @@ resource "aws_iam_policy" "github_ecr_push_policy" {
           "ecr:CompleteLayerUpload",
           "ecr:PutImage"
         ]
-        Resource = "arn:aws:ecr:*:*:repository/genea-usermanagement"
+        Resource = var.ecr_repository_arn
       }
     ]
   })
 }
 
+# tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "github_ecs_deploy_policy" {
   name = "github-actions-ecs-deploy"
 

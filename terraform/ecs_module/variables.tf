@@ -43,3 +43,8 @@ variable "container_image" {
 variable "vpc_cidr" {
   type = string
 }
+
+variable "ecr_repository_arn" {
+  type = string
+  default = "arn:aws:ecr:us-east-1:211395678080:repository/genea-usermanagement"
+}

@@ -35,6 +35,7 @@ resource "aws_lb" "genea_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets            = var.pub_subnet_ids
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_target_group" "genea_tg" {
