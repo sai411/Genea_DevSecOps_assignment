@@ -1,4 +1,4 @@
-resource "aws_ecs_task_definition" "service" {
+resource "aws_ecs_task_definition" "db_migration_taskdefinition" {
   family                   = "genea-bd-migration"
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
