@@ -12,12 +12,14 @@ on:
 permissions:
   contents: read
   id-token: write
+  actions: read
 
 jobs:
   terraform:
     name: Terraform Validate, Secure and deploy
     runs-on: ubuntu-latest
-
+    env:
+      GITHUB_TOKEN: ${{ secrets.TOKEN }}
     defaults:
       run:
         working-directory: terraform
