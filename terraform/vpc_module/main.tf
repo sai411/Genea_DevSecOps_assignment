@@ -142,7 +142,7 @@ resource "aws_kms_key" "cloudwatch_logs_key" {
         Sid    = "AllowVPCFlowLogsRole"
         Effect = "Allow"
         Principal = {
-          AWS = aws_vpc_flow_logs.vpc_flow_logs_role.arn
+          AWS = aws_iam_role.vpc_flow_logs_role.arn
         }
         Action = [
           "kms:Encrypt",
@@ -162,10 +162,6 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/flow-logs/dev-vpc"
   retention_in_days = 30
   kms_key_id = aws_kms_key.cloudwatch_logs_key.arn
-}
-
-resource "aws_log" "name" {
-  
 }
 
 resource "aws_iam_role" "vpc_flow_logs_role" {
