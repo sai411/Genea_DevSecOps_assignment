@@ -93,3 +93,137 @@ resource "aws_route_table_association" "pvt-association" {
   subnet_id      = aws_subnet.Dev-private[count.index].id
   route_table_id = aws_route_table.private_route.id
 }
+
+
+
+# Enabling vpc_flowlogs
+
+data "aws_caller_identity" "current" {}
+
+resource "aws_kms_key" "cloudwatch_logs_key" {
+  description             = "KMS key for CloudWatch Logs and VPC Flow Logs"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowRootAccount"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "AllowCloudWatchLogsService"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${var.aws_region}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+          }
+        }
+      },
+    
+      {
+        Sid    = "AllowVPCFlowLogsRole"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_vpc_flow_logs.vpc_flow_logs_role.arn
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name              = "/aws/vpc/flow-logs/dev-vpc"
+  retention_in_days = 30
+  kms_key_id = aws_kms_key.cloudwatch_logs_key.arn
+}
+
+resource "aws_log" "name" {
+  
+}
+
+resource "aws_iam_role" "vpc_flow_logs_role" {
+  name = "vpc-flow-logs-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Service = "vpc-flow-logs.amazonaws.com"
+        }
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+# tfsec:ignore:aws-iam-no-policy-wildcards
+resource "aws_iam_policy" "vpc_flow_logs_policy" {
+  name = "vpc-flow-logs-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowWriteFlowLogs"
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:log-stream:*"
+      },
+      {
+        Sid    = "AllowDescribe"
+        Effect = "Allow"
+        Action = [
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = aws_cloudwatch_log_group.vpc_flow_logs.arn
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "vpc_flow_logs_attach" {
+  role       = aws_iam_role.vpc_flow_logs_role.name
+  policy_arn = aws_iam_policy.vpc_flow_logs_policy.arn
+}
+
+resource "aws_flow_log" "vpc_flow_logs" {
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.dev-vpc.id
+  iam_role_arn         = aws_iam_role.vpc_flow_logs_role.arn
+}
+
