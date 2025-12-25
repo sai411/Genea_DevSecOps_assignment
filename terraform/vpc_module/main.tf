@@ -96,7 +96,7 @@ resource "aws_route_table_association" "pvt-association" {
 
 
 # Enabling VPC Flow Logs
-rresource "aws_iam_policy" "vpc_flow_logs_policy" {
+resource "aws_iam_policy" "vpc_flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
   policy = jsonencode({
