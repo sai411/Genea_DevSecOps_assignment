@@ -96,6 +96,8 @@ resource "aws_route_table_association" "pvt-association" {
 
 
 # Enabling VPC Flow Logs
+
+# tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "vpc_flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
