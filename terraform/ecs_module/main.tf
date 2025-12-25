@@ -19,7 +19,6 @@ resource "aws_security_group" "ecs_service_sg" {
     security_groups = [aws_security_group.alb_sg.id]
     description     = "ALB to ECS inside VPC"
   }
-
   egress {
     from_port   = 3306
     to_port     = 3306
