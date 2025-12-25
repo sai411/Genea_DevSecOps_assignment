@@ -92,3 +92,30 @@ resource "aws_route_table_association" "pvt-association" {
   subnet_id      = aws_subnet.Dev-private[count.index].id
   route_table_id = aws_route_table.private_route.id
 }
+
+resource "aws_iam_policy" "vpc_flow_logs_policy" {
+  name = "vpc-flow-logs-policy"
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}

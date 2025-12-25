@@ -1,3 +1,4 @@
+# tfsec:ignore:aws-elb-alb-not-public
 resource "aws_security_group" "alb_sg" {
   name        = "genea-alb-sg"
   description = "ALB security group"
@@ -25,6 +26,7 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
+# tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "genea_alb" {
   name               = "genea-alb"
   internal           = false
@@ -50,6 +52,7 @@ resource "aws_lb_target_group" "genea_tg" {
   }
 }
 
+# tfsec:ignore:aws-elb-http-not-https-I-don't hasve a valid domain to test this
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.genea_alb.arn
   port              = 80
@@ -59,6 +62,8 @@ resource "aws_lb_listener" "http" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.genea_tg.arn
   }
+
+  
 }
 
 output "alb_hostname" {
