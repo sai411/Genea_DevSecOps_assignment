@@ -28,6 +28,7 @@ resource "aws_iam_role" "github_actions_role" {
   })
 }
 
+
 # tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "github_ecr_push_policy" {
   name = "github-actions-ecr-push-policy"
@@ -83,15 +84,15 @@ resource "aws_iam_policy" "github_ecs_deploy_policy" {
 }
 
 resource "aws_iam_role_policy_attachment" "github_ecr_push_attach" {
-  role       = aws_iam_role.github_actions_ecr_role.name
+  role       = aws_iam_role.github_actions_role.name
   policy_arn = aws_iam_policy.github_ecr_push_policy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "github_ecs_deploy_attach" {
-  role       = aws_iam_role.github_actions_ecr_role.name
+  role       = aws_iam_role.github_actions_role.name
   policy_arn = aws_iam_policy.github_ecs_deploy_policy.arn
 }
 
 output "github_actions_role_arn" {
-  value = aws_iam_role.github_actions_ecr_role.arn
+  value = aws_iam_role.github_actions_role.arn
 }
