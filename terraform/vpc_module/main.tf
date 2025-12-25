@@ -93,6 +93,8 @@ resource "aws_route_table_association" "pvt-association" {
   route_table_id = aws_route_table.private_route.id
 }
 
+
+# Enabling VPC Flow Logs
 resource "aws_iam_policy" "vpc_flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
@@ -118,4 +120,36 @@ resource "aws_iam_policy" "vpc_flow_logs_policy" {
       }
     ]
   })
+}
+resource "aws_iam_role" "vpc_flow_logs_role" {
+  name               = "vpc-flow-logs-role"
+  assume_role_policy = data.aws_iam_policy_document.vpc_flow_logs_assume_role.json
+}
+
+data "aws_iam_policy_document" "vpc_flow_logs_assume_role" {
+  statement {
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["vpc-flow-logs.amazonaws.com"]
+    }
+    actions = ["sts:AssumeRole"]
+  }
+}
+resource "aws_iam_role_policy_attachment" "vpc_flow_logs_attach" {
+  role       = aws_iam_role.vpc_flow_logs_role.name
+  policy_arn = aws_iam_policy.vpc_flow_logs_policy.arn
+}
+
+resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
+  name              = "/vpc/flow/logs"
+  retention_in_days = 30
+}
+
+resource "aws_flow_log" "vpc" {
+  log_destination      = aws_cloudwatch_log_group.vpc_flow_logs.arn
+  log_destination_type = "cloud-watch-logs"
+  traffic_type         = "ALL"
+  vpc_id               = aws_vpc.dev-vpc.id
+  iam_role_arn         = aws_iam_role.vpc_flow_logs_role.arn
 }
