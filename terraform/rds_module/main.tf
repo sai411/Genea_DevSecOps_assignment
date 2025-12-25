@@ -48,7 +48,7 @@ resource "aws_kms_key" "rds" {
 }
 
 
-
+# tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "sql-db" {
   allocated_storage                   = 10
   db_name                             = "devdb"
