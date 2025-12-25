@@ -22,8 +22,8 @@ resource "aws_security_group" "alb_sg" {
   from_port       = 8000
   to_port         = 8000
   protocol        = "tcp"
-  security_groups = [aws_security_group.ecs_service_sg.id]
-  description     = "ALB to ECS service traffic only"
+  cidr_blocks = [var.vpc_cidr]
+  description     = "ALB to services within vpc only"
 }
 }
 
