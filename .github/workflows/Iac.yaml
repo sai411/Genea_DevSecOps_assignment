@@ -51,8 +51,6 @@ jobs:
 
       - name: Run TFLint
         uses: terraform-linters/setup-tflint@v4
-        with:
-          severity: HIGH,CRITICAL
 
       - name: TFLint Scan
         run: |
