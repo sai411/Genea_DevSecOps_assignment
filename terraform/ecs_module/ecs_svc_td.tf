@@ -23,17 +23,17 @@ resource "aws_ecs_task_definition" "service" {
       ]
 
       environment = [
-        { 
+        {
           name = "DB_NAME", value = "devdb"
         },
-        { 
-          name = "DB_HOST", value = var.dbhost 
+        {
+          name = "DB_HOST", value = var.dbhost
         },
-        { 
-          name = "DB_PORT", value = "3306" 
+        {
+          name = "DB_PORT", value = "3306"
         },
-        { 
-        name = "DB_USER", value = var.dbuser
+        {
+          name = "DB_USER", value = var.dbuser
         }
       ]
 
@@ -98,14 +98,14 @@ resource "aws_ecs_task_definition" "service" {
 
 
 resource "aws_ecs_service" "service" {
-  name            = var.ecs_svc_name
-  cluster         = aws_ecs_cluster.genea.id
-  task_definition = aws_ecs_task_definition.service.arn
-  desired_count   = 1
+  name                 = var.ecs_svc_name
+  cluster              = aws_ecs_cluster.genea.id
+  task_definition      = aws_ecs_task_definition.service.arn
+  desired_count        = 1
   force_new_deployment = true
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2_cp.name
-    weight = 1
+    weight            = 1
   }
   network_configuration {
     subnets         = var.private_subnet_id
@@ -123,5 +123,5 @@ resource "aws_ecs_service" "service" {
 
 output "aws_ecs_security_group_id" {
   value = aws_security_group.ecs_service_sg.id
-  
+
 }

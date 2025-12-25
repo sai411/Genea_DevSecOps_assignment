@@ -7,5 +7,5 @@ variable "vpc_id" {
 }
 
 variable "ecs_service_sg_id" {
-  
+
 }

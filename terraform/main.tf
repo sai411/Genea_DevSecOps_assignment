@@ -26,5 +26,5 @@ output "alb_hostname" {
 
 output "github_actions_role_arn" {
   value = module.ecs.github_actions_role_arn
-  
+
 }

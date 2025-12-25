@@ -68,7 +68,7 @@ resource "aws_launch_template" "lt" {
 #!/bin/bash
 echo ECS_CLUSTER=${var.ecs_cluster_name} >> /etc/ecs/ecs.config
 EOF
-)
+  )
 }
 
 resource "aws_autoscaling_group" "dev_asg" {

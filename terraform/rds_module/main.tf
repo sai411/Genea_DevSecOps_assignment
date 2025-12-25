@@ -25,9 +25,9 @@ resource "aws_security_group" "db_sg" {
   vpc_id      = var.vpc_id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
     security_groups = [var.ecs_service_sg_id]
   }
 
@@ -40,18 +40,18 @@ resource "aws_security_group" "db_sg" {
 }
 
 resource "aws_db_instance" "sql-db" {
-  allocated_storage                  = 10
-  db_name                            = "devdb"
-  identifier                         = "ee-instance-demo"
-  engine                             = "mysql"
-  engine_version                     = "5.7"
-  instance_class                     = "db.t3.micro"
-  username                           = local.db_credentials.username
-  password                           = local.db_credentials.password
-  parameter_group_name               = "default.mysql5.7"
-  availability_zone                 = "us-east-1a"
+  allocated_storage                   = 10
+  db_name                             = "devdb"
+  identifier                          = "ee-instance-demo"
+  engine                              = "mysql"
+  engine_version                      = "5.7"
+  instance_class                      = "db.t3.micro"
+  username                            = local.db_credentials.username
+  password                            = local.db_credentials.password
+  parameter_group_name                = "default.mysql5.7"
+  availability_zone                   = "us-east-1a"
   iam_database_authentication_enabled = true
-  skip_final_snapshot                = true
+  skip_final_snapshot                 = true
 
   db_subnet_group_name   = aws_db_subnet_group.default.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
