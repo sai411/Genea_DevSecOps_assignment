@@ -147,9 +147,22 @@ resource "aws_iam_role_policy_attachment" "vpc_flow_logs_attach" {
   policy_arn = aws_iam_policy.vpc_flow_logs_policy.arn
 }
 
+resource "aws_kms_key" "cloudwatch_logs" {
+  description             = "KMS key for CloudWatch Logs encryption"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+}
+
+resource "aws_kms_alias" "cloudwatch_logs" {
+  name          = "alias/cloudwatch-logs"
+  target_key_id = aws_kms_key.cloudwatch_logs.key_id
+}
+
+
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/vpc/flow/logs"
   retention_in_days = 30
+  kms_key_id        = aws_kms_key.cloudwatch_logs.arn
 }
 
 resource "aws_flow_log" "vpc" {

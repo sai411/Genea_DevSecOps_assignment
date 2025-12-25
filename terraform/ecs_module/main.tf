@@ -1,5 +1,9 @@
 resource "aws_ecs_cluster" "genea" {
   name = var.ecs_cluster_name
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
 }
 
 # tfsec:ignore:aws-ec2-no-public-egress-sgr
@@ -13,6 +17,7 @@ resource "aws_security_group" "ecs_service_sg" {
     to_port         = 8000
     protocol        = "tcp"
     security_groups = [aws_security_group.alb_sg.id]
+    description     = "ALB to ECS inside VPC"
   }
 
   egress {
@@ -43,6 +48,7 @@ resource "aws_security_group" "lt_sg" {
     to_port         = 65535
     protocol        = "tcp"
     security_groups = [aws_security_group.ecs_service_sg.id]
+    description     = "Allow all traffic from ECS service"
   }
 
   egress {

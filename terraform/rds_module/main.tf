@@ -29,6 +29,7 @@ resource "aws_security_group" "db_sg" {
     to_port         = 3306
     protocol        = "tcp"
     security_groups = [var.ecs_service_sg_id]
+    description     = "ECS service to RDS inside VPC"
   }
 
   egress {

@@ -5,6 +5,7 @@ resource "aws_security_group" "alb_sg" {
   vpc_id      = var.vpc_id
 
   ingress {
+    description = "Allow HTTP traffic from the internet to ALB"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
@@ -12,6 +13,7 @@ resource "aws_security_group" "alb_sg" {
   }
 
   ingress {
+    description = "Allow HTTPS traffic from the internet to ALB"
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
@@ -19,11 +21,11 @@ resource "aws_security_group" "alb_sg" {
   }
 
   egress {
-  from_port       = 8000
-  to_port         = 8000
-  protocol        = "tcp"
-  cidr_blocks = [var.vpc_cidr]
-  description     = "ALB to services within vpc only"
+    description = "Allow outbound traffic from ALB to targets"
+    from_port   = 8000
+    to_port     = 8000
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
 }
 }
 
