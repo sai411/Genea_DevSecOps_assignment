@@ -3,8 +3,8 @@ data "aws_iam_openid_connect_provider" "github" {
 }
 
 #tfsec:ignore:aws-iam-no-inline-policy
-resource "aws_iam_role" "github_actions_ecr_role" {
-  name = "github-actions-ecr-role"
+resource "aws_iam_role" "github_actions_role" {
+  name = "github-actions-deploy-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -12,7 +12,7 @@ resource "aws_iam_role" "github_actions_ecr_role" {
       {
         Effect = "Allow"
         Principal = {
-          Federated = aws_iam_openid_connect_provider.github.arn
+          Federated = data.aws_iam_openid_connect_provider.github.arn
         }
         Action = "sts:AssumeRoleWithWebIdentity"
         Condition = {
@@ -21,7 +21,6 @@ resource "aws_iam_role" "github_actions_ecr_role" {
           }
           StringLike = {
             "token.actions.githubusercontent.com:sub" = "repo:sai411/Genea_DevSecOps_assignment:*"
-
           }
         }
       }
