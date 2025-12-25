@@ -1,4 +1,4 @@
-# tfsec:ignore:aws-elb-alb-not-public
+# tfsec:ignore:aws-ec2-no-public-ingress-sgr
 resource "aws_security_group" "alb_sg" {
   name        = "genea-alb-sg"
   description = "ALB security group"
@@ -19,12 +19,14 @@ resource "aws_security_group" "alb_sg" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  from_port       = 8000
+  to_port         = 8000
+  protocol        = "tcp"
+  security_groups = [aws_security_group.ecs_service_sg.id]
+  description     = "ALB to ECS service traffic only"
 }
+}
+
 
 # tfsec:ignore:aws-elb-alb-not-public
 resource "aws_lb" "genea_alb" {
@@ -52,7 +54,7 @@ resource "aws_lb_target_group" "genea_tg" {
   }
 }
 
-# tfsec:ignore:aws-elb-http-not-https-I-don't hasve a valid domain to test this
+# tfsec:ignore:aws-elb-http-not-used
 resource "aws_lb_listener" "http" {
   load_balancer_arn = aws_lb.genea_alb.arn
   port              = 80

@@ -10,6 +10,7 @@ module "ecs" {
   dbhost            = module.rds.dbhost
   dbuser            = module.rds.dbuser
   db_password       = module.rds.db_secret_arn
+  rds_sg_id         = module.rds.rds_security_group_id
 }
 
 

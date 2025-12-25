@@ -39,3 +39,7 @@ variable "container_image" {
   type    = string
   default = "211395678080.dkr.ecr.us-east-1.amazonaws.com/genea-usermanagement:latest"
 }
+
+variable "rds_sg_id" {
+  type = string
+}

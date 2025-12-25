@@ -15,11 +15,20 @@ resource "aws_security_group" "ecs_service_sg" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
+  from_port   = 3306
+  to_port     = 3306
+  protocol    = "tcp"
+  security_groups = [var.rds_sg_id]
+  description = "ECS to RDS"
+}
+
+egress {
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+  description = "ECS to AWS APIs via NAT"
+}
 }
 
 resource "aws_security_group" "lt_sg" {
@@ -35,10 +44,11 @@ resource "aws_security_group" "lt_sg" {
   }
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+    description = "EC2 to AWS services"
   }
 }
 
