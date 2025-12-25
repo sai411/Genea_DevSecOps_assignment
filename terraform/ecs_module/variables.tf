@@ -40,6 +40,6 @@ variable "container_image" {
   default = "211395678080.dkr.ecr.us-east-1.amazonaws.com/genea-usermanagement:latest"
 }
 
-variable "rds_sg_id" {
+variable "vpc_cidr" {
   type = string
 }

@@ -15,12 +15,12 @@ resource "aws_security_group" "ecs_service_sg" {
   }
 
   egress {
-  from_port   = 3306
-  to_port     = 3306
-  protocol    = "tcp"
-  security_groups = [var.rds_sg_id]
-  description = "ECS to RDS"
-}
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+    description = "ECS to RDS inside VPC"
+  }
 
 egress {
   from_port   = 443
