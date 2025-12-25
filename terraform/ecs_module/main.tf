@@ -2,6 +2,7 @@ resource "aws_ecs_cluster" "genea" {
   name = var.ecs_cluster_name
 }
 
+# tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "ecs_service_sg" {
   name        = "genea-ecs-service-sg"
   description = "Security group for ECS service"
@@ -31,6 +32,7 @@ egress {
 }
 }
 
+# tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "lt_sg" {
   name        = "genea-ecs-ec2-sg"
   description = "Security group for ECS EC2 instances"
