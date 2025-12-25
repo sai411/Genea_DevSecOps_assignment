@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   terraform:
-    name: Terraform Validate & Secure
+    name: Terraform Validate, Secure and deploy
     runs-on: ubuntu-latest
 
     defaults:
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.6.6
+          terraform_version: 1.8.5
 
       - name: Terraform Init
         run: terraform init
