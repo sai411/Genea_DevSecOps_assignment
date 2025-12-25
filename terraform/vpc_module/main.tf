@@ -97,6 +97,60 @@ resource "aws_route_table_association" "pvt-association" {
 
 # Enabling VPC Flow Logs
 
+data "aws_caller_identity" "current" {}
+
+
+resource "aws_kms_key" "cloudwatch_logs" {
+  description             = "KMS key for CloudWatch Logs and VPC Flow Logs"
+  deletion_window_in_days = 7
+  enable_key_rotation     = true
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+
+      # Allow CloudWatch Logs service
+      {
+        Sid    = "AllowCloudWatchLogsService"
+        Effect = "Allow"
+        Principal = {
+          Service = "logs.${var.aws_region}.amazonaws.com"
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+          }
+        }
+      },
+
+      # Allow VPC Flow Logs IAM role
+      {
+        Sid    = "AllowVPCFlowLogsRole"
+        Effect = "Allow"
+        Principal = {
+          AWS = aws_iam_role.vpc_flow_logs_role.arn
+        }
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:ReEncrypt*",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # tfsec:ignore:aws-iam-no-policy-wildcards
 resource "aws_iam_policy" "vpc_flow_logs_policy" {
   name = "vpc-flow-logs-policy"
@@ -105,7 +159,7 @@ resource "aws_iam_policy" "vpc_flow_logs_policy" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "AllowWriteToSpecificLogGroup"
+        Sid    = "AllowWriteFlowLogs"
         Effect = "Allow"
         Action = [
           "logs:CreateLogStream",
@@ -113,9 +167,8 @@ resource "aws_iam_policy" "vpc_flow_logs_policy" {
         ]
         Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:log-stream:*"
       },
-
       {
-        Sid    = "AllowDescribeForFlowLogs"
+        Sid    = "AllowDescribe"
         Effect = "Allow"
         Action = [
           "logs:DescribeLogGroups",
@@ -125,7 +178,10 @@ resource "aws_iam_policy" "vpc_flow_logs_policy" {
       }
     ]
   })
+
+  depends_on = [aws_cloudwatch_log_group.vpc_flow_logs]
 }
+
 
 resource "aws_iam_role" "vpc_flow_logs_role" {
   name               = "vpc-flow-logs-role"
@@ -145,12 +201,6 @@ data "aws_iam_policy_document" "vpc_flow_logs_assume_role" {
 resource "aws_iam_role_policy_attachment" "vpc_flow_logs_attach" {
   role       = aws_iam_role.vpc_flow_logs_role.name
   policy_arn = aws_iam_policy.vpc_flow_logs_policy.arn
-}
-
-resource "aws_kms_key" "cloudwatch_logs" {
-  description             = "KMS key for CloudWatch Logs encryption"
-  deletion_window_in_days = 7
-  enable_key_rotation     = true
 }
 
 resource "aws_kms_alias" "cloudwatch_logs" {
