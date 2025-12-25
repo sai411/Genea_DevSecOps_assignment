@@ -96,32 +96,36 @@ resource "aws_route_table_association" "pvt-association" {
 
 
 # Enabling VPC Flow Logs
-resource "aws_iam_policy" "vpc_flow_logs_policy" {
+rresource "aws_iam_policy" "vpc_flow_logs_policy" {
   name = "vpc-flow-logs-policy"
 
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+
       {
+        Sid    = "AllowWriteToSpecificLogGroup"
         Effect = "Allow"
         Action = [
           "logs:CreateLogStream",
           "logs:PutLogEvents"
         ]
-        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:log-stream:*"
       },
+
       {
+        Sid    = "AllowDescribeForFlowLogs"
         Effect = "Allow"
         Action = [
-          "logs:CreateLogGroup",
           "logs:DescribeLogGroups",
           "logs:DescribeLogStreams"
         ]
-        Resource = "${aws_cloudwatch_log_group.vpc_flow_logs.arn}:*"
+        Resource = aws_cloudwatch_log_group.vpc_flow_logs.arn
       }
     ]
   })
 }
+
 resource "aws_iam_role" "vpc_flow_logs_role" {
   name               = "vpc-flow-logs-role"
   assume_role_policy = data.aws_iam_policy_document.vpc_flow_logs_assume_role.json
