@@ -132,8 +132,8 @@ resource "aws_kms_key" "cloudwatch_logs_key" {
         ]
         Resource = "*"
         Condition = {
-          StringEquals = {
-            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:*"
+          ArnLike = {
+            "kms:EncryptionContext:aws:logs:arn" = "arn:aws:logs:${var.aws_region}:${data.aws_caller_identity.current.account_id}:log-group:*"
           }
         }
       },
