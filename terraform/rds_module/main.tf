@@ -66,6 +66,7 @@ resource "aws_db_instance" "sql-db" {
   backup_retention_period = 7
   deletion_protection = true
   performance_insights_enabled = true
+  performance_insights_kms_key_id = aws_kms_key.rds.arn
 
   db_subnet_group_name   = aws_db_subnet_group.default.name
   vpc_security_group_ids = [aws_security_group.db_sg.id]
