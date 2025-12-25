@@ -48,3 +48,9 @@ variable "ecr_repository_arn" {
   type = string
   default = "arn:aws:ecr:us-east-1:211395678080:repository/genea-usermanagement"
 }
+
+variable "container_DB_image" {
+  type    = string
+  default = "211395678080.dkr.ecr.us-east-1.amazonaws.com/genea-db-migration:latest"
+  
+}
