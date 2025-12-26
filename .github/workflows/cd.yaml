@@ -7,6 +7,10 @@ on:
         description: "Docker image tag to deploy (example: 25)"
         required: true
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   cd:
     runs-on: ubuntu-latest
