@@ -39,7 +39,9 @@ resource "aws_iam_policy" "github_ecr_push_policy" {
       {
         Effect = "Allow"
         Action = [
-          "ecr:GetAuthorizationToken"
+          "ecr:GetAuthorizationToken",
+          "ec2:DescribeSecurityGroups",
+				  "ec2:DescribeSubnets"
         ]
         Resource = "*"
       },
