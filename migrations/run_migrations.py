@@ -2,44 +2,33 @@ import os
 import pymysql
 from pathlib import Path
 
-DB_HOST = os.getenv("DB_HOST")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-DB_PORT = int(os.getenv("DB_PORT", "3306"))
-
-MIGRATIONS_DIR = Path("sql")
-
 conn = pymysql.connect(
-    host=DB_HOST,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    database=DB_NAME,
-    port=DB_PORT,
+    host=os.getenv("DB_HOST"),
+    user=os.getenv("DB_USER"),
+    password=os.getenv("DB_PASSWORD"),
+    database=os.getenv("DB_NAME"),
+    port=int(os.getenv("DB_PORT", "3306")),
     autocommit=False
 )
 
 cursor = conn.cursor()
 
 try:
-    migration_files = sorted(MIGRATIONS_DIR.glob("*.sql"))
+    for sql_file in sorted(Path("sql").glob("*.sql")):
+        print(f"Running migration: {sql_file.name}")
 
-    if not migration_files:
-        print("No migration files found. Exiting.")
-    else:
-        for file in migration_files:
-            print(f"Running migration: {file.name}")
-            with open(file, "r") as f:
-                sql = f.read()
-                cursor.execute(sql)
+        with open(sql_file) as f:
+            for stmt in f.read().split(";"):
+                stmt = stmt.strip()
+                if stmt:
+                    cursor.execute(stmt)
 
-        conn.commit()
-        print("All database migrations applied successfully")
+    conn.commit()
+    print("Database migrations applied successfully")
 
-except Exception as e:
+except Exception:
     conn.rollback()
-    print("Migration failed. Rolled back.")
-    raise e
+    raise
 
 finally:
     cursor.close()
