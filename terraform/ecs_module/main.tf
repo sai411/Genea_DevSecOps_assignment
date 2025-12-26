@@ -103,6 +103,14 @@ resource "aws_autoscaling_group" "dev_asg" {
   }
 }
 
+resource "aws_autoscaling_lifecycle_hook" "ecs_terminate_hook" {
+  name                   = "ecs-terminate-drain"
+  autoscaling_group_name = aws_autoscaling_group.dev_asg.name
+  lifecycle_transition   = "autoscaling:EC2_INSTANCE_TERMINATING"
+  heartbeat_timeout      = 300
+  default_result         = "CONTINUE"
+}
+
 resource "aws_ecs_capacity_provider" "ec2_cp" {
   name = "${var.ecs_cluster_name}-cp"
 
@@ -113,6 +121,7 @@ resource "aws_ecs_capacity_provider" "ec2_cp" {
       status          = "ENABLED"
       target_capacity = 100
     }
+    managed_termination_protection = "ENABLED"
   }
 }
 
