@@ -95,6 +95,8 @@ EOF
 resource "aws_autoscaling_group" "dev_asg" {
   min_size            = 1
   max_size            = 3
+  desired_capacity     = 1
+  protect_from_scale_in = true
   vpc_zone_identifier = var.private_subnet_id
 
   launch_template {
