@@ -54,3 +54,9 @@ variable "container_DB_image" {
   default = "211395678080.dkr.ecr.us-east-1.amazonaws.com/genea-db-migration:latest"
   
 }
+
+variable "ecr_repository_arn_db_migration" {
+  type = string
+  default = "arn:aws:ecr:us-east-1:211395678080:repository/genea-db-migration"
+  
+}

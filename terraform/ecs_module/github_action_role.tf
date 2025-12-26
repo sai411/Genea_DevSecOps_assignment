@@ -56,7 +56,7 @@ resource "aws_iam_policy" "github_ecr_push_policy" {
           "ecr:CompleteLayerUpload",
           "ecr:PutImage"
         ]
-        Resource = [var.ecr_repository_arn, "arn:aws:ecr:us-east-1:211395678080:repository/genea-db-migration"]
+        Resource = [var.ecr_repository_arn, var.ecr_repository_arn_db_migration]
       }
     ]
   })
