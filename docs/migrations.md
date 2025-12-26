@@ -8,4 +8,4 @@ Migrations are executed by running a one-time ECS task instead of running direct
 
 The migration workflow is triggered manually through GitHub Actions. This allows operators to decide exactly when a schema change should be applied, typically before deploying a new application version that depends on that change. To apply new migrations, the user simply adds new SQL files to the migrations directory and triggers the migration workflow. The system automatically picks up and applies the new scripts without requiring any code changes.
 
-These migrations are handled by writing sql quires and placing them in migration/sql directory , which will be used by py script to run them over the database. Finally you need to write the mysql quires to .sql files.
+These migrations are handled by writing sql quires and placing them in migration/sql directory , which will be used by py script to run them over the database. Finally you need to write the mysql quires to .sql files , to maintain the numeric consistancy to execute in order used numbers in the file names.

@@ -37,6 +37,18 @@ Manual CD (ECS Service Deployment)
 
 Code pushed to the Terraform directory of the GitHub repository will trigger the Terraform IaC pipeline and create or update the infrastructure.
 
+# To Test application locally
+
+```
+git clone https://github.com/sai411/Genea_DevSecOps_assignment.git
+
+cd app
+
+docker build -t testing_app .
+
+docker run -dit -p 8000:8000 testing_app (this will work only for /health endpoint, require database to mske it fully work)
+```
+
 # terrafom pipeline
 
 I have used terraform for IAC and created these resources using the tf scripts. 
