@@ -18,16 +18,29 @@ try:
         print(f"Running migration: {sql_file.name}")
 
         with open(sql_file) as f:
-            for stmt in f.read().split(";"):
+            statements = f.read().split(";")
+
+            for stmt in statements:
                 stmt = stmt.strip()
-                if stmt:
+                if not stmt:
+                    continue
+
+                try:
                     cursor.execute(stmt)
+                except pymysql.err.OperationalError as e:
+                    # 1060 = duplicate column
+                    # 1050 = table already exists
+                    if e.args[0] in (1050, 1060):
+                        print(f"Skipping (already applied): {stmt}")
+                    else:
+                        raise
 
     conn.commit()
     print("Database migrations applied successfully")
 
-except Exception:
+except Exception as e:
     conn.rollback()
+    print("Migration failed. Rolled back.")
     raise
 
 finally:
