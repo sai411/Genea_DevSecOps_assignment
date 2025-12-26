@@ -3,6 +3,10 @@ name: DB Migration (Manual)
 on:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   migrate:
     runs-on: ubuntu-latest
