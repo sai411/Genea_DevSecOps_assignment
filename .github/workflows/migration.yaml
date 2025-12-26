@@ -80,9 +80,13 @@ jobs:
 
       - name: Run DB Migration Task
         run: |
+          echo "Using subnets: $ECS_SUBNET_IDS"
+          echo "Using security group: $ECS_SECURITY_GROUP_ID"
+
           aws ecs run-task \
             --cluster ${{ vars.ECS_CLUSTER_NAME }} \
             --launch-type EC2 \
             --task-definition genea-db-migration \
-            --network-configuration "awsvpcConfiguration={subnets=[${{ vars.PRIVATE_SUBNET_IDS }}],securityGroups=[${{ vars.ECS_TASK_SG_ID }}],assignPublicIp=DISABLED}" \
+            --network-configuration "awsvpcConfiguration={subnets=[$ECS_SUBNET_IDS],securityGroups=[$ECS_SECURITY_GROUP_ID],assignPublicIp=DISABLED}" \
             --count 1
+
