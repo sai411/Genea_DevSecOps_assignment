@@ -106,6 +106,7 @@ resource "aws_ecs_service" "service" {
   capacity_provider_strategy {
     capacity_provider = aws_ecs_capacity_provider.ec2_cp.name
     weight            = 1
+    base              = 1
   }
   network_configuration {
     subnets         = var.private_subnet_id
@@ -117,6 +118,8 @@ resource "aws_ecs_service" "service" {
     container_name   = "genea-app"
     container_port   = 8000
   }
+
+  depends_on = [ aws_autoscaling_group.dev_asg ]
 
   health_check_grace_period_seconds = 30
 }

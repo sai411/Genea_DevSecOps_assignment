@@ -2,7 +2,7 @@ resource "aws_ecs_cluster" "genea" {
   name = var.ecs_cluster_name
   setting {
     name  = "containerInsights"
-    value = "enabled"
+    value = "enhanced"
   }
 }
 
