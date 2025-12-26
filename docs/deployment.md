@@ -4,7 +4,7 @@ Infrastructure deployment is handled entirely using Terraform. All AWS resources
 
 This pipeline steps contains: Checkout, Configure AWS credentials (OIDC), Setting up Terraform, initilization, Terraform Format, validate and TFLint, tfsec finally plan and apply. Terraform code has been fully scanned and with best practices , minimal policies used where ever needed, evrything with encyption, and with restricted security groups and networking to enable security.
 
-To Create the Terrafrom resources some manual changes is required in the aws and github actions before triggering the pipeline.
+To Create the Terraform resources some manual changes is required in the aws and github actions before triggering the pipeline.
 
 1. Create an OIDC association in IAM webidentity providers
 
@@ -13,7 +13,7 @@ To Create the Terrafrom resources some manual changes is required in the aws and
 --> Set audiance as sts.amazonaws.com
 --> Create the association
 
-2. Create an IAM role used for terrafrom to create the resources
+2. Create an IAM role used for Terraform to create the resources
 
 --> Create a role, add the reustpolicy ad below
 
@@ -38,7 +38,7 @@ To Create the Terrafrom resources some manual changes is required in the aws and
     ]
 }
 
---> Attach policies with least previalage acess, As we are using this for Infrastructure provisioning, So We need poweruser access, to seamlessly use this role to deploy resources, as it was restricted to used by a partuclular repo.
+--> Attach policies with least privilege acess, As we are using this for Infrastructure provisioning, So We need poweruser access, to seamlessly use this role to deploy resources, as it was restricted to used by a partuclular repo.
 
 --> Attach poweruser policy and create the role 
 
@@ -46,7 +46,7 @@ To Create the Terrafrom resources some manual changes is required in the aws and
 
 --> Create a Secret in github actions 
 --> add Key as "AWS_IAC_ROLE_ARN" and value add the role arn that was created above.
---> save that , I have already used the same in the terrafrom code.
+--> save that , I have already used the same in the Terraform code.
 
 4. Create two ECR repos which was as one time activity,  so I don't want to make any changes to them when terrfaorm reconciles again by any trigger. Hence two repo were needed one for application and other for DB migration activiy images.
 Add these as well in the secrets as ECR_REPOSITORY_DB, ECR_REPOSITORY and ECS_CLUSTER_NAME as a variable
