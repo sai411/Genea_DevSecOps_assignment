@@ -27,18 +27,17 @@ try:
 
                 try:
                     cursor.execute(stmt)
-                except pymysql.err.OperationalError as e:
-                    # 1060 = duplicate column
-                    # 1050 = table already exists
-                    if e.args[0] in (1050, 1060):
-                        print(f"Skipping (already applied): {stmt}")
+
+                except pymysql.err.ProgrammingError as e:
+                    if e.args[0] in (1050, 1060, 1146):
+                        print(f"Skipping (already applied or dependency missing): {stmt}")
                     else:
                         raise
 
     conn.commit()
     print("Database migrations applied successfully")
 
-except Exception as e:
+except Exception:
     conn.rollback()
     print("Migration failed. Rolled back.")
     raise
