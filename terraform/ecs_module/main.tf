@@ -34,6 +34,9 @@ egress {
   cidr_blocks = ["0.0.0.0/0"]
   description = "ECS to AWS APIs via NAT"
 }
+tags = {
+  "Name" = "genea-ecs-service-sg"
+}
 }
 
 # tfsec:ignore:aws-ec2-no-public-egress-sgr

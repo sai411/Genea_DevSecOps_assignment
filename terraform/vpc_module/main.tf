@@ -30,6 +30,7 @@ resource "aws_subnet" "Dev-private" {
 
   tags = {
     Name = "dev-private-${count.index}"
+    Tier = "private"
   }
 }
 

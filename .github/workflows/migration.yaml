@@ -25,13 +25,66 @@ jobs:
           pip install pip-audit
           pip-audit
 
-      - name: Run DB migration
-        working-directory: migrations
-        env:
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_PORT: ${{ secrets.DB_PORT }}
-          DB_NAME: ${{ secrets.DB_NAME }}
-          DB_USER: ${{ secrets.DB_USER }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      - name: Set image tag
         run: |
-          python run_migrations.py
+          echo "IMAGE_TAG=${{ github.run_number }}" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        working-directory: app
+        run: |
+          docker build \
+            -t ${{ secrets.ECR_REPOSITORY_DB }}:${IMAGE_TAG} \
+            -t ${{ secrets.ECR_REPOSITORY_DB }}:latest .
+
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ${{ secrets.ECR_REPOSITORY_DB }}:${{ github.run_number }}
+          severity: HIGH,CRITICAL
+          exit-code: 1
+          ignore-unfixed: true
+
+      - name: Push image to ECR
+        run: |
+          docker push ${{ secrets.ECR_REPOSITORY_DB }}:${IMAGE_TAG}
+          docker push ${{ secrets.ECR_REPOSITORY_DB }}:latest .
+
+      - name: Resolve network configuration dynamically
+        run: |
+          SG_ID=$(aws ec2 describe-security-groups \
+            --filters "Name=tag:Name,Values=genea-ecs-service-sg" \
+            --query "SecurityGroups[0].GroupId" \
+            --output text)
+
+          SUBNET_IDS=$(aws ec2 describe-subnets \
+            --filters "Name=tag:Tier,Values=private" \
+            --query "Subnets[*].SubnetId" \
+            --output text | tr '\t' ',')
+
+          echo "ECS_SECURITY_GROUP_ID=$SG_ID" >> $GITHUB_ENV
+          echo "ECS_SUBNET_IDS=$SUBNET_IDS" >> $GITHUB_ENV
+
+
+      - name: Run DB Migration Task
+        uses: aws-actions/amazon-ecs-run-task@v1
+        with:
+          cluster: ${{ secrets.ECS_CLUSTER_NAME }}
+          task-definition: genea-db-migration
+          launch-type: EC2
+          network-configuration: |
+            {
+              "awsvpcConfiguration": {
+                "subnets": ["${{ env.ECS_SUBNET_IDS }}"],
+                "securityGroups": ["${{ env.ECS_SECURITY_GROUP_ID }}"],
+                "assignPublicIp": "DISABLED"
+              }
+            }
