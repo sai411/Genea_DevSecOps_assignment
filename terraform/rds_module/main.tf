@@ -1,5 +1,5 @@
 data "aws_secretsmanager_secret" "rds_secret" {
-  arn = "arn:aws:secretsmanager:us-east-1:211395678080:secret:RDS-Secrets-EwHRyx"
+  arn = var.secrets_arn
 }
 
 data "aws_secretsmanager_secret_version" "rds_secret_version" {
