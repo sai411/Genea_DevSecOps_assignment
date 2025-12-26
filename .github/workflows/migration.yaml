@@ -75,11 +75,12 @@ jobs:
 
 
       - name: Run DB Migration Task
-        uses: aws-actions/amazon-ecs-run-task@v1
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           cluster: ${{ secrets.ECS_CLUSTER_NAME }}
           task-definition: genea-db-migration
           launch-type: EC2
+          run-task: true
           network-configuration: >
             awsvpcConfiguration={
               subnets=[${{ vars.PRIVATE_SUBNET_IDS }}],
