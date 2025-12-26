@@ -43,7 +43,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
 
       - name: Build Docker image
-        working-directory: app
+        working-directory: migrations
         run: |
           docker build \
             -t ${{ secrets.ECR_REPOSITORY_DB }}:${IMAGE_TAG} \
