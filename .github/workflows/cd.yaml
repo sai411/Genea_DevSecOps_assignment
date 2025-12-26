@@ -1,0 +1,68 @@
+name: CD - Deploy to ECS (Manual Image Version)
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag to deploy (example: 25)"
+        required: true
+
+jobs:
+  cd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Fetch current task definition
+        run: |
+          aws ecs describe-task-definition \
+            --task-definition genea-app \
+            --query taskDefinition \
+            > taskdef.json
+
+      - name: Update image version in task definition
+        run: |
+          IMAGE_TAG=${{ github.event.inputs.image_tag }}
+
+          jq --arg IMAGE "${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG" \
+          '.containerDefinitions[0].image = $IMAGE
+          | del(
+              .taskDefinitionArn,
+              .revision,
+              .status,
+              .requiresAttributes,
+              .compatibilities,
+              .registeredAt,
+              .registeredBy
+            )' taskdef.json > new-taskdef.json
+
+      - name: Register new task definition
+        run: |
+          NEW_TD_ARN=$(aws ecs register-task-definition \
+            --cli-input-json file://new-taskdef.json \
+            --query "taskDefinition.taskDefinitionArn" \
+            --output text)
+
+          echo "NEW_TD_ARN=$NEW_TD_ARN" >> $GITHUB_ENV
+
+      - name: Deploy updated task definition to ECS service
+        run: |
+          aws ecs update-service \
+            --cluster genea-cluster \
+            --service genea-service \
+            --task-definition $NEW_TD_ARN \
+            --force-new-deployment
+
+      - name: Wait for service stability
+        run: |
+          aws ecs wait services-stable \
+            --cluster genea-cluster \
+            --services genea-service
+
+      - name: Deployment complete
+        run: echo "Deployment successful with image tag ${{ github.event.inputs.image_tag }}"
