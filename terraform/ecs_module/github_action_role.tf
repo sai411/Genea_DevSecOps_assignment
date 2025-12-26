@@ -74,7 +74,8 @@ resource "aws_iam_policy" "github_ecs_deploy_policy" {
           "ecs:DescribeTaskDefinition",
           "ecs:RegisterTaskDefinition",
           "ecs:UpdateService",
-          "ecs:runTask"
+          "ecs:runTask",
+          "ecs:DescribeTasks"
         ]
         Resource = [
             "arn:aws:ecs:us-east-1:211395678080:service/genea-cluster/genea-service",
@@ -82,6 +83,17 @@ resource "aws_iam_policy" "github_ecs_deploy_policy" {
             "arn:aws:ecs:us-east-1:211395678080:task-definition/genea-db-migration:*",
             "arn:aws:ecs:us-east-1:211395678080:cluster/genea-cluster"
      ]
+      },
+
+      {
+        Effect = "Allow"
+        Action = [
+          "iam:PassRole"
+        ]
+        Resource = [
+          aws_iam_role.ecs_task_role.arn,
+          aws_iam_role.ecs_execution_role.arn
+        ]
       }
     ]
   })
