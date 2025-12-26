@@ -65,7 +65,7 @@ jobs:
           working_directory: terraform
       
       - name: unlocking state
-        run: terraform force-unlock 5574ad7c-4158-e732-13c9-78dfe66a3c7b || echo "No locks detected"
+        run: terraform force-unlock --force 5574ad7c-4158-e732-13c9-78dfe66a3c7b || echo "No locks detected"
 
       - name: Terraform Plan
         run: terraform plan
