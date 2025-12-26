@@ -63,12 +63,12 @@ jobs:
         uses: aquasecurity/tfsec-action@v1.0.3
         with:
           working_directory: terraform
+      
+      - name: unlocking state
+        run: terraform force-unlock 5574ad7c-4158-e732-13c9-78dfe66a3c7b || echo "No locks detected"
 
       - name: Terraform Plan
-        run: terraform plan 
-
-      - name: unlocking state
-        run: terraform force-unlock 5574ad7c-4158-e732-13c9-78dfe66a3c7b
+        run: terraform plan
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
