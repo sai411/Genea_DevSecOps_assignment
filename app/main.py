@@ -11,7 +11,6 @@ DB_USER = os.getenv("DB_USER")
 DB_PASSWORD = os.getenv("DB_PASSWORD")
 DB_PORT = int(os.getenv("DB_PORT", "3306"))
 
-
 def get_db_connection():
     return pymysql.connect(
         host=DB_HOST,
