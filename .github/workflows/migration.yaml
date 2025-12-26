@@ -80,11 +80,9 @@ jobs:
           cluster: ${{ secrets.ECS_CLUSTER_NAME }}
           task-definition: genea-db-migration
           launch-type: EC2
-          network-configuration: |
-            {
-              "awsvpcConfiguration": {
-                "subnets": ["${{ env.ECS_SUBNET_IDS }}"],
-                "securityGroups": ["${{ env.ECS_SECURITY_GROUP_ID }}"],
-                "assignPublicIp": "DISABLED"
-              }
+          network-configuration: >
+            awsvpcConfiguration={
+              subnets=[${{ vars.PRIVATE_SUBNET_IDS }}],
+              securityGroups=[${{ vars.ECS_TASK_SG_ID }}],
+              assignPublicIp=DISABLED
             }
