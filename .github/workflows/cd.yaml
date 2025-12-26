@@ -1,4 +1,4 @@
-name: CD - Deploy to ECS (Manual Image Version)
+name: CD - Deploy to ECS Service
 
 on:
   workflow_dispatch:

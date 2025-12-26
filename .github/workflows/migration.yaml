@@ -1,4 +1,4 @@
-name: DB Migration (Manual)
+name: DB Migration - Manual Trigger based on requirements
 
 on:
   workflow_dispatch:

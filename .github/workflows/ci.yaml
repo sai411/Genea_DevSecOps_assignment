@@ -1,4 +1,4 @@
-name: CI - Genea User Management (DevSecOps)
+name: CI - Genea User Management
 
 on:
   push:
