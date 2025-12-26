@@ -60,7 +60,7 @@ jobs:
       - name: Push image to ECR
         run: |
           docker push ${{ secrets.ECR_REPOSITORY_DB }}:${IMAGE_TAG}
-          docker push ${{ secrets.ECR_REPOSITORY_DB }}:latest .
+          docker push ${{ secrets.ECR_REPOSITORY_DB }}:latest
 
       - name: Resolve network configuration dynamically
         run: |

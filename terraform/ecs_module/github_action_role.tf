@@ -52,7 +52,7 @@ resource "aws_iam_policy" "github_ecr_push_policy" {
           "ecr:CompleteLayerUpload",
           "ecr:PutImage"
         ]
-        Resource = var.ecr_repository_arn
+        Resource = [var.ecr_repository_arn, "arn:aws:ecr:us-east-1:211395678080:repository/genea-db-migration"]
       }
     ]
   })
@@ -76,6 +76,7 @@ resource "aws_iam_policy" "github_ecs_deploy_policy" {
         Resource = [
             "arn:aws:ecs:us-east-1:211395678080:service/genea-cluster/genea-service",
             "arn:aws:ecs:us-east-1:211395678080:task-definition/genea-app:*",
+            "arn:aws:ecs:us-east-1:211395678080:task-definition/genea-db-migration:*",
             "arn:aws:ecs:us-east-1:211395678080:cluster/genea-cluster"
      ]
       }
