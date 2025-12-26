@@ -115,6 +115,6 @@ curl -X POST \
     "email": "sai@example.com"
   }'
 
-  Then you can observe the data gain by visiting <alb_dns>/users
+  Then you can observe the data by visiting <alb_dns>/users
 
 ```
