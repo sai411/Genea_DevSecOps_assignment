@@ -1,10 +1,9 @@
 # tfsec:ignore:aws-ecs-enable-container-insight
-// Already enabled container insights with enhanced below
 resource "aws_ecs_cluster" "genea" {
   name = var.ecs_cluster_name
   setting {
     name  = "containerInsights"
-    value = "enhanced"
+    value = "enabled"
   }
 }
 
