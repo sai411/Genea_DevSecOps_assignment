@@ -2,13 +2,7 @@
 
 The following diagram represents the high-level architecture of the Genea User Management DevSecOps solution and how different components interact across the CI/CD lifecycle.
 
-![Architecture Diagram] 
-
-Click here to view th diagram
-
-
-
-
+![Architecture Diagram] Link mentioned in the file simple_architecture_link
 
 The architecture diagram illustrates how the Genea User Management application is deployed securely inside AWS using a layered network design. All resources are hosted within a single AWS region and isolated inside a dedicated VPC.
 
