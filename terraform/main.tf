@@ -7,9 +7,12 @@ module "ecs" {
   vpc_id            = module.vpc.vpc_id
   private_subnet_id = module.vpc.private_subnet_id
   pub_subnet_ids    = module.vpc.pub_subnet_id
-  dbhost            = module.rds.dbhost
-  dbuser            = module.rds.dbuser
-  db_password       = module.rds.db_secret_arn
+  # dbhost            = module.rds.dbhost
+  #dbuser            = module.rds.dbuser
+  #db_password       = module.rds.db_secret_arn
+  dbhost            = var.dbhost
+  dbuser            = var.dbuser
+  db_password      = var.db_password
   vpc_cidr          = module.vpc.vpc_cidr_block
 }
 
@@ -19,6 +22,9 @@ module "rds" {
   vpc_id            = module.vpc.vpc_id
   pvt_subnet_ids    = module.vpc.private_subnet_id
   ecs_service_sg_id = module.ecs.aws_ecs_security_group_id
+  dbhost            = var.dbhost
+  dbuser            = var.dbuser
+  db_password      = var.db_password
 }
 
 output "alb_hostname" {
