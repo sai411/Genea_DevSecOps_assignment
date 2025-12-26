@@ -73,7 +73,8 @@ resource "aws_iam_policy" "github_ecs_deploy_policy" {
           "ecs:DescribeServices",
           "ecs:DescribeTaskDefinition",
           "ecs:RegisterTaskDefinition",
-          "ecs:UpdateService"
+          "ecs:UpdateService",
+          "ecs:runTask"
         ]
         Resource = [
             "arn:aws:ecs:us-east-1:211395678080:service/genea-cluster/genea-service",
