@@ -1,5 +1,5 @@
 resource "aws_ecs_task_definition" "db_migration_taskdefinition" {
-  family                   = "genea-bd-migration"
+  family                   = "genea-db-migration"
   requires_compatibilities = ["EC2"]
   network_mode             = "awsvpc"
   cpu                      = "256"
@@ -10,7 +10,7 @@ resource "aws_ecs_task_definition" "db_migration_taskdefinition" {
 
   container_definitions = jsonencode([
     {
-      name      = "genea-bd-migration"
+      name      = "genea-db-migration"
       image     = var.container_DB_image
       essential = true
 
@@ -47,7 +47,7 @@ resource "aws_ecs_task_definition" "db_migration_taskdefinition" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = "genea-bd-migration-ecs-logs"
+          awslogs-group         = "genea-db-migration-ecs-logs"
           awslogs-region        = "us-east-1"
           awslogs-stream-prefix = "ecs"
           awslogs-create-group  = "true"
