@@ -78,6 +78,7 @@ resource "aws_launch_template" "lt" {
     name = aws_iam_instance_profile.ecs_ec2_profile.name
   }
 
+
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
