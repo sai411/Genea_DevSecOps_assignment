@@ -41,7 +41,9 @@ resource "aws_iam_policy" "github_ecr_push_policy" {
         Action = [
           "ecr:GetAuthorizationToken",
           "ec2:DescribeSecurityGroups",
-				  "ec2:DescribeSubnets"
+				  "ec2:DescribeSubnets",
+          "ecs:DescribeTaskDefinition",
+          "ecs:RegisterTaskDefinition",
         ]
         Resource = "*"
       },
