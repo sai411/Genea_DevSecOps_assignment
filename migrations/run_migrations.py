@@ -18,26 +18,14 @@ try:
         print(f"Running migration: {sql_file.name}")
 
         with open(sql_file) as f:
-            statements = f.read().split(";")
-
-            for stmt in statements:
-                stmt = stmt.strip()
-                if not stmt:
-                    continue
-
-                try:
-                    cursor.execute(stmt)
-
-                except pymysql.err.ProgrammingError as e:
-                    if e.args[0] in (1050, 1060, 1146):
-                        print(f"Skipping (already applied or dependency missing): {stmt}")
-                    else:
-                        raise
+            sql = f.read().strip()
+            if sql:
+                cursor.execute(sql)
 
     conn.commit()
     print("Database migrations applied successfully")
 
-except Exception:
+except Exception as e:
     conn.rollback()
     print("Migration failed. Rolled back.")
     raise
