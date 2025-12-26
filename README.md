@@ -46,7 +46,7 @@ cd app
 
 docker build -t testing_app .
 
-docker run -dit -p 8000:8000 testing_app (this will work only for /health endpoint, require database to mske it fully work)
+docker run -dit -p 8000:8000 testing_app (this will work only for /health endpoint, require database to make it fully work)
 ```
 
 # terrafom pipeline
@@ -117,10 +117,11 @@ Onec the domain name is avaialbe , We can update the Terraform code to add the l
 Open your browser 
 <alb_dns>/users to see the user details
 <alb_dns>/health to see the applivation was healthy or not 
-Run the curl cmmand or an api call from postman to add the data to the database.
+
+Run the curl command or an api call from postman to add the data to the database.
 
 curl -X POST \
-  http://genea-alb-170837838.us-east-1.elb.amazonaws.com/user_add \
+  <alb_dns>/user_add \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Sai",
