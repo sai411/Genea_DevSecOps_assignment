@@ -66,7 +66,7 @@ Terraform remote backend is configured using an S3 bucket to store the state fil
 ```
 git clone https://github.com/sai411/Genea_DevSecOps_assignment.git
 
-cd terraform
+cd Genea_DevSecOps_assignment/terraform
 
 terraform init 
 
