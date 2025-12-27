@@ -49,7 +49,7 @@ docker build -t testing_app .
 docker run -dit -p 8000:8000 testing_app (this will work only for /health endpoint, require database to make it fully work)
 ```
 
-# terrafom pipeline
+# terraform pipeline
 
 I have used terraform for IAC and created these resources using the tf scripts. 
 
