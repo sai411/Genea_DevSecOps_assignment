@@ -42,7 +42,7 @@ Code pushed to the Terraform directory of the GitHub repository will trigger the
 ```
 git clone https://github.com/sai411/Genea_DevSecOps_assignment.git
 
-cd app
+cd Genea_DevSecOps_assignment/app
 
 docker build -t testing_app .
 
