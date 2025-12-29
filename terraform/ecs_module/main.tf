@@ -7,6 +7,7 @@ resource "aws_ecs_cluster" "genea" {
   }
 }
 
+
 # tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group" "ecs_service_sg" {
   name        = "genea-ecs-service-sg"
