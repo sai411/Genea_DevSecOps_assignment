@@ -103,6 +103,10 @@ This migration process is manually triggered to ensure controlled and safe schem
 
 If new SQL scripts are required, they can be added to the migration directory, and the migration pipeline can be triggered manually. The execution logic ensures idempotency so migrations can be safely re-run.
 
+Rollback Strategy
+
+Database schema rollback is not performed. All migrations are designed to be forward-only and backward compatible, allowing the application to be rolled back safely without reverting the database schema.
+
 # CD pipeline
 
 This is the final deployment stage of the usermanagement applciation , Where this was also a pipeline which needs a manual intervenction, I choose like this because , the DB migration will be done prior to this and best practice will be manual trigger of fianl CD pipleine , which helps to handle the various environment deployments.
