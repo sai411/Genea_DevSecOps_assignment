@@ -13,7 +13,7 @@ module "ecs" {
   vpc_cidr          = module.vpc.vpc_cidr_block
 }
 
-
+#added 
 module "rds" {
   source            = "./rds_module"
   vpc_id            = module.vpc.vpc_id
